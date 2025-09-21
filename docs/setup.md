@@ -51,7 +51,7 @@ Optional:
 - UPSTASH_REDIS_REST_TOKEN
 - POSTHOG_KEY
 - POSTHOG_HOST
-- GEMINI_IMAGE_MODEL (defaults to gemini-2.5-flash-image)
+- GEMINI_IMAGE_MODEL (defaults to gemini-2.5-flash-image-preview)
 
 See also: [web/README.md](web/README.md:1)
 
@@ -106,7 +106,7 @@ Files: [web/lib/gemini.ts](web/lib/gemini.ts:1), [web/app/api/generate/route.ts]
 Steps:
 - Create an API key at Google AI Studio.
 - Set GOOGLE_API_KEY in env.
-- Optionally set GEMINI_IMAGE_MODEL (default gemini-2.5-flash-image).
+- Optionally set GEMINI_IMAGE_MODEL (default gemini-2.5-flash-image-preview).
 - The prompt builder enforces automatic inpainting: buildPrompt() in [web/lib/gemini.ts](web/lib/gemini.ts:39).
 
 ## 7) Storage (Vercel Blob)

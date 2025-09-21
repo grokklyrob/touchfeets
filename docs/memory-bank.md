@@ -7,7 +7,7 @@ Scope: back end generation, quotas, watermarking, and operational defaults.
 ## Policies and defaults
 
 - Generation engine: Google AI Studio Gemini 2.5 Flash Image (configurable)
-- Model env override: GEMINI_IMAGE_MODEL (default gemini-2.5-flash-image)
+- Model env override: GEMINI_IMAGE_MODEL (default gemini-2.5-flash-image-preview)
 - Automatic inpainting: fully automatic masking and inpainting; no user mask input anywhere
 - Prompt style presets: Byzantine, Gothic, Cyberpunk
 - Input pre-processing: resize to maxEdge 1024px, fit inside, no enlargement
@@ -40,7 +40,7 @@ Scope: back end generation, quotas, watermarking, and operational defaults.
 ## Operational defaults and env
 
 - GOOGLE_API_KEY: required
-- GEMINI_IMAGE_MODEL: optional override, defaults to gemini-2.5-flash-image
+- GEMINI_IMAGE_MODEL: optional override, defaults to gemini-2.5-flash-image-preview
 - BLOB_READ_WRITE_TOKEN: required for server-side uploads
 - DATABASE_URL: Postgres (Neon/Vercel Postgres)
 - UPSTASH_REDIS_REST_URL/UPSTASH_REDIS_REST_TOKEN: optional; limiter fails open if absent
@@ -49,7 +49,7 @@ Scope: back end generation, quotas, watermarking, and operational defaults.
 
 ```env
 GOOGLE_API_KEY=...
-GEMINI_IMAGE_MODEL=gemini-2.5-flash-image
+GEMINI_IMAGE_MODEL=gemini-2.5-flash-image-preview
 BLOB_READ_WRITE_TOKEN=...
 DATABASE_URL=...
 UPSTASH_REDIS_REST_URL=...

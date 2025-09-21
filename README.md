@@ -89,7 +89,7 @@ Example flow (local):
 
 Environment:
 - GOOGLE_API_KEY (required)
-- GEMINI_IMAGE_MODEL (optional; default "gemini-2.5-flash-image") in [.env.example](web/.env.example:1)
+- GEMINI_IMAGE_MODEL (optional; default "gemini-2.5-flash-image-preview") in [.env.example](web/.env.example:1)
 - BLOB_READ_WRITE_TOKEN (required)
 - DATABASE_URL (required)
 - UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN (optional; rate limiter fails open if absent)

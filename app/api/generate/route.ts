@@ -138,7 +138,7 @@ export async function POST(req: Request) {
 
     // Call Gemini
     await recordEvent(jobId, "call_gemini_start", {
-      model: process.env.GEMINI_IMAGE_MODEL || "gemini-2.5-flash-image",
+      model: process.env.GEMINI_IMAGE_MODEL || "gemini-2.5-flash-image-preview",
       outputFormat: body.outputFormat || "png",
     });
 
