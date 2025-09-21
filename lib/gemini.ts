@@ -198,9 +198,9 @@ export async function generateStyledJesusFeet(
   let result: unknown;
   try {
     console.log(`Calling model: ${modelId}`);
-    console.log(`Content structure:`, JSON.stringify(requestContents, null, 2));
+    console.log(`Content structure:`, JSON.stringify(contents, null, 2));
 
-    result = await model.generateContent({ contents: requestContents });
+    result = await model.generateContent(contents);
 
     console.log(`Model response received:`, typeof result);
   } catch (err: unknown) {
