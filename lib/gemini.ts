@@ -26,6 +26,19 @@ export class SafetyBlockedError extends Error {
 }
 
 /**
+ * Narrow type for HTTP-like errors from SDK/transport layers.
+ * Avoids use of 'any' while allowing optional HTTP fields.
+ */
+type GenerativeApiError = Error & {
+  status?: number | string;
+  code?: number | string;
+  response?: {
+    status?: number;
+    data?: unknown;
+  };
+};
+
+/**
  * Resolve model id, allowing override via env.
  * Updated to use the correct available model name.
  */
@@ -217,14 +230,17 @@ export async function generateStyledJesusFeet(
     const msg = err instanceof Error ? err.message : "Model generateContent failed";
     console.error(`Model call failed: ${msg}`);
     console.error(`Full error:`, err);
-    // Extra diagnostics for HTTP issues like 405
-    const anyErr = err as any;
-    if (anyErr?.status || anyErr?.code) {
-      console.error(`Status/Code:`, anyErr.status, anyErr.code);
-    }
-    if (anyErr?.response) {
-      console.error(`HTTP response status:`, anyErr.response?.status);
-      console.error(`HTTP response data:`, anyErr.response?.data);
+    // Extra diagnostics for HTTP issues like 405 without using 'any'
+    if (err && typeof err === "object") {
+      const httpErr = err as GenerativeApiError;
+      if (httpErr.status !== undefined || httpErr.code !== undefined) {
+        console.error(`Status/Code:`, httpErr.status, httpErr.code);
+      }
+      if (httpErr.response && typeof httpErr.response === "object") {
+        const resp = httpErr.response as { status?: number; data?: unknown };
+        console.error(`HTTP response status:`, resp.status);
+        console.error(`HTTP response data:`, resp.data);
+      }
     }
 
     if (/safety/i.test(msg)) {
