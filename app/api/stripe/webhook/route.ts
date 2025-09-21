@@ -24,12 +24,13 @@ async function recordWebhookEvent(event: Stripe.Event) {
       data: {
         type: event.type,
         stripeEventId: event.id,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         payloadJson: event as unknown as any,
         status: "received",
       },
     });
     return true;
-  } catch (err: any) {
+  } catch {
     // Unique violation means we already processed/recorded this event
     return false;
   }
@@ -63,9 +64,9 @@ async function fetchSubscriptionDetails(subscriptionId: string) {
     stripePriceId: price,
     currentPeriodStart:
       // Stripe uses epoch seconds
-      (sub as any).current_period_start ? new Date((sub as any).current_period_start * 1000) : null,
+      (sub as unknown as { current_period_start?: number }).current_period_start ? new Date((sub as unknown as { current_period_start?: number }).current_period_start! * 1000) : null,
     currentPeriodEnd:
-      (sub as any).current_period_end ? new Date((sub as any).current_period_end * 1000) : null,
+      (sub as unknown as { current_period_end?: number }).current_period_end ? new Date((sub as unknown as { current_period_end?: number }).current_period_end! * 1000) : null,
     anchorUtcDay: 1, // design choice: quotas anchored to 1st of month UTC
   } as const;
 }
@@ -100,8 +101,8 @@ export async function POST(req: Request) {
   try {
     const rawBody = await req.text();
     event = stripe.webhooks.constructEvent(rawBody, signature, secret);
-  } catch (err: any) {
-    return NextResponse.json({ error: `Invalid webhook: ${err.message}` }, { status: 400 });
+  } catch (err: unknown) {
+    return NextResponse.json({ error: `Invalid webhook: ${err instanceof Error ? err.message : 'Unknown error'}` }, { status: 400 });
   }
 
   // Redis-based idempotency pre-check (fast path)
@@ -202,9 +203,9 @@ export async function POST(req: Request) {
 
     await markProcessed(event.id, "processed");
     return NextResponse.json({ ok: true });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("webhook processing error", err);
     await markProcessed(event.id, "failed");
-    return NextResponse.json({ error: err?.message ?? "Webhook failed" }, { status: 500 });
+    return NextResponse.json({ error: err instanceof Error ? err.message : "Webhook failed" }, { status: 500 });
   }
 }

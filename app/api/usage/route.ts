@@ -7,7 +7,7 @@ import { getOrCreateQuota, monthUtc } from "@/lib/entitlements";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-function hasId(user: any): user is { id: string } {
+function hasId(user: { id?: string }): user is { id: string } {
   return !!user && typeof user.id === "string";
 }
 

@@ -10,7 +10,7 @@ export default function Home() {
         <h1 className="text-4xl sm:text-6xl font-bold neon-crimson">TouchFeets.com</h1>
         <p className="mt-4 text-lg sm:text-xl text-[var(--color-muted)]">Let the Savior Touch Your Soles</p>
         <div className="mt-8 flex gap-3 justify-center flex-wrap">
-          <a href="/api/auth/signin" className="btn-accent px-6 py-3 text-sm font-semibold">Sign in with Google</a>
+          <Link href="/api/auth/signin" className="btn-accent px-6 py-3 text-sm font-semibold">Sign in with Google</Link>
           <a href="#generate" className="rounded-full px-6 py-3 border border-[rgba(225,6,60,0.35)] hover:border-[rgba(225,6,60,0.7)] transition">Generate now</a>
           <Link href="/pricing" className="rounded-full px-6 py-3 border border-[rgba(225,6,60,0.35)] hover:border-[rgba(225,6,60,0.7)] transition">Pricing</Link>
         </div>

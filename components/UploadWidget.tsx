@@ -75,7 +75,6 @@ export default function UploadWidget() {
 
   const [message, setMessage] = useState<string | null>(null);
 
-  const [jobId, setJobId] = useState<string | null>(null);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [blockedReason, setBlockedReason] = useState<string | null>(null);
@@ -85,7 +84,7 @@ export default function UploadWidget() {
   useEffect(() => {
     return () => {
       if (pollRef.current) {
-        clearInterval(pollRef.current as any);
+        clearInterval(pollRef.current);
         pollRef.current = null;
       }
     };
@@ -95,12 +94,11 @@ export default function UploadWidget() {
     setBusy(false);
     setPhase("idle");
     setMessage(null);
-    setJobId(null);
     setDownloadUrl(null);
     setPreviewUrl(null);
     setBlockedReason(null);
     if (pollRef.current) {
-      clearInterval(pollRef.current as any);
+      clearInterval(pollRef.current);
       pollRef.current = null;
     }
   }, []);
@@ -109,7 +107,6 @@ export default function UploadWidget() {
     setFile(f);
     setPhase("picking");
     setMessage(null);
-    setJobId(null);
     setDownloadUrl(null);
     setPreviewUrl(null);
     setBlockedReason(null);
@@ -150,7 +147,7 @@ export default function UploadWidget() {
     });
     if (!res.ok) {
       const err = await safeJson(res);
-      throw new Error(err?.error || `Upload failed (${res.status})`);
+      throw new Error(typeof err?.error === 'string' ? err.error : `Upload failed (${res.status})`);
     }
     return (await res.json()) as UploadResult;
   }
@@ -158,7 +155,12 @@ export default function UploadWidget() {
   async function startGeneration(upload: UploadResult): Promise<{ id: string }> {
     setPhase("queued");
     setMessage("Starting generation...");
-    const body: any = {
+    const body: {
+      inputUrl: string;
+      style: StylePreset;
+      outputFormat: OutputFormat;
+      promptVariant?: string;
+    } = {
       inputUrl: upload.url,
       style,
       outputFormat: format,
@@ -178,7 +180,7 @@ export default function UploadWidget() {
     }
     if (!res.ok) {
       const err = await safeJson(res);
-      throw new Error(err?.error || `Generate failed (${res.status})`);
+      throw new Error(typeof err?.error === 'string' ? err.error : `Generate failed (${res.status})`);
     }
     const json = await res.json();
     if (!json?.id) throw new Error("Generate did not return a job id");
@@ -188,9 +190,8 @@ export default function UploadWidget() {
   function startPolling(id: string) {
     setPhase("processing");
     setMessage("Processing with Gemini...");
-    setJobId(id);
 
-    if (pollRef.current) clearInterval(pollRef.current as any);
+    if (pollRef.current) clearInterval(pollRef.current);
 
     const tick = async () => {
       try {
@@ -219,7 +220,7 @@ export default function UploadWidget() {
             setDownloadUrl(dl);
             setPreviewUrl(dl + "#inline-preview"); // same url; hint not used by server
             if (pollRef.current) {
-              clearInterval(pollRef.current as any);
+              clearInterval(pollRef.current);
               pollRef.current = null;
             }
             break;
@@ -230,7 +231,7 @@ export default function UploadWidget() {
             setBlockedReason(reason);
             setMessage(humanBlockedReason(reason));
             if (pollRef.current) {
-              clearInterval(pollRef.current as any);
+              clearInterval(pollRef.current!);
               pollRef.current = null;
             }
             break;
@@ -239,7 +240,7 @@ export default function UploadWidget() {
             setPhase("failed");
             setMessage("Generation failed. Please try another image or later.");
             if (pollRef.current) {
-              clearInterval(pollRef.current as any);
+              clearInterval(pollRef.current!);
               pollRef.current = null;
             }
             break;
@@ -247,15 +248,15 @@ export default function UploadWidget() {
           default:
             break;
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         // keep polling a bit; if repeated, it will stop when user resets
-        setMessage(err?.message || "Polling error");
+        setMessage(err instanceof Error ? err.message : "Polling error");
       }
     };
 
     // Immediate tick then interval
     tick();
-    pollRef.current = setInterval(tick, 1500) as any;
+    pollRef.current = setInterval(tick, 1500);
   }
 
   async function onStart() {
@@ -269,18 +270,17 @@ export default function UploadWidget() {
       setPhase("uploading");
       setDownloadUrl(null);
       setPreviewUrl(null);
-      setJobId(null);
       const uploaded = await uploadToBlob(file);
       const { id } = await startGeneration(uploaded);
       startPolling(id);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setBusy(false);
-      if (err?.message?.includes("sign in")) {
+      if (err instanceof Error && err.message.includes("sign in")) {
         setPhase("failed");
       } else {
         setPhase("failed");
       }
-      setMessage(err?.message || "Unexpected error");
+      setMessage(err instanceof Error ? err.message : "Unexpected error");
     } finally {
       // busy stays true while polling; will flip on terminal states where appropriate
     }
@@ -456,7 +456,7 @@ export default function UploadWidget() {
   );
 }
 
-async function safeJson(res: Response): Promise<any | null> {
+async function safeJson(res: Response): Promise<Record<string, unknown> | null> {
   try {
     return await res.json();
   } catch {

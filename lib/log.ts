@@ -37,8 +37,7 @@ export function getRequestId(req?: Request | null): string {
   const hdr = req?.headers?.get("x-request-id") || req?.headers?.get("x-amzn-trace-id") || "";
   if (hdr) return hdr;
   // global crypto should exist in Node 18+/Edge; guard just in case
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const anyCrypto: any = (globalThis as any).crypto;
+  const anyCrypto = (globalThis as { crypto?: { randomUUID?: () => string } }).crypto;
   if (anyCrypto?.randomUUID) return anyCrypto.randomUUID();
   return Math.random().toString(36).slice(2);
 }
@@ -58,20 +57,16 @@ export function log(level: LogLevel, scope: string, message: string, meta?: LogM
     case "debug":
       // Prefer not to spam production logs with debug unless explicitly needed
       if (process.env.NODE_ENV !== "production") {
-        // eslint-disable-next-line no-console
         console.debug(line);
       }
       break;
     case "info":
-      // eslint-disable-next-line no-console
       console.log(line);
       break;
     case "warn":
-      // eslint-disable-next-line no-console
       console.warn(line);
       break;
     case "error":
-      // eslint-disable-next-line no-console
       console.error(line);
       break;
   }

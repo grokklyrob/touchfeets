@@ -97,6 +97,36 @@ UPSTASH_REDIS_REST_TOKEN=...
 
 ## Deployment Status: ✅ READY FOR PRODUCTION
 
+### Recent Deployment Fixes (2025-09-21)
+
+**✅ RESOLVED - Vercel Build Issues:**
+- Fixed all TypeScript `any` type errors across the codebase
+- Updated Next.js route handlers for Next.js 15 compatibility (Promise-based params)
+- Resolved ESLint warnings and unused variable issues
+- Fixed Prisma JSON field type compatibility issues
+- Cleaned up unused eslint-disable directives
+- Build now passes successfully with zero errors or warnings
+
+**Files Updated:**
+- `app/api/jobs/[id]/route.ts` - Fixed NextAuth session typing and Promise-based params
+- `app/api/stripe/webhook/route.ts` - Fixed error handling and Stripe subscription typing
+- `app/api/stripe/create-checkout/route.ts` - Fixed error handling typing
+- `app/api/stripe/portal/route.ts` - Fixed error handling typing
+- `app/api/upload-url/route.ts` - Fixed error handling typing
+- `app/api/usage/route.ts` - Fixed NextAuth user type guard
+- `app/api/download/[id]/route.ts` - Updated for Next.js 15 Promise-based params
+- `app/api/generate/route.ts` - Fixed Prisma JSON field typing
+- `app/page.tsx` - Replaced HTML anchor with Next.js Link component
+- `components/PricingTable.tsx` - Fixed error handling typing
+- `components/UploadWidget.tsx` - Fixed multiple typing issues and removed unused variables
+- `lib/entitlements.ts` - Fixed audit log JSON typing
+- `lib/gemini.ts` - Fixed Gemini API response typing and Sharp metadata usage
+- `lib/watermark.ts` - Fixed Sharp format typing
+- `lib/log.ts` - Cleaned up unused eslint-disable directives
+- `lib/prisma.ts` - Cleaned up unused eslint-disable directive
+
+**Build Status:** ✅ Clean build with no errors or warnings
+
 **Completed Core Features:**
 - ✅ Upload/Generate Widget (Task 9) - Fully functional with drag-drop, style selection, polling, and download
 - ✅ Jobs polling system (Task 7) - Verified working with proper status transitions

@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "functions": {
+    "/api/download/[id]": {},
+    "/api/upload-url": {},
+    "/api/stripe/create-checkout": {},
+    "/api/stripe/portal": {},
+    "/api/jobs/[id]": {},
+    "/api/usage": {},
+    "/api/generate": {},
+    "/api/stripe/webhook": {}
+  }
+}

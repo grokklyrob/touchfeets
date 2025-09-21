@@ -102,8 +102,7 @@ function formatToSharp(format: "png" | "webp"): { sharpFormat: "png" | "webp"; m
  */
 async function prepareInputBytes(input: Uint8Array, maxEdge: number): Promise<{ bytes: Uint8Array; mime: string }> {
   const base = Buffer.isBuffer(input) ? input : Buffer.from(input);
-  const img = sharp(base, { failOn: "none" as any });
-  const meta = await img.metadata();
+  const img = sharp(base, { failOn: "none" });
 
   const resized = await img
     .resize({
@@ -129,14 +128,15 @@ async function prepareInputBytes(input: Uint8Array, maxEdge: number): Promise<{ 
 /**
  * Extract base64 image inlineData from a generative response.
  */
-function extractInlineImageBase64(resp: any): { b64: string; mime?: string } | null {
+function extractInlineImageBase64(resp: unknown): { b64: string; mime?: string } | null {
   try {
-    const candidates = resp?.candidates || [];
+    const candidates = (resp as { candidates?: unknown[] })?.candidates || [];
     for (const c of candidates) {
-      const parts = c?.content?.parts || [];
+      const parts = (c as { content?: { parts?: unknown[] } })?.content?.parts || [];
       for (const p of parts) {
-        if (p?.inlineData?.data) {
-          return { b64: p.inlineData.data as string, mime: p.inlineData.mimeType as string | undefined };
+        if ((p as { inlineData?: { data?: string; mimeType?: string } })?.inlineData?.data) {
+          const inlineData = (p as { inlineData: { data: string; mimeType?: string } }).inlineData;
+          return { b64: inlineData.data, mime: inlineData.mimeType };
         }
       }
     }
@@ -188,22 +188,22 @@ export async function generateStyledJesusFeet(
   ];
 
   // Call model
-  let result: any;
+  let result: unknown;
   try {
     result = await model.generateContent({ contents });
-  } catch (err: any) {
+  } catch (err: unknown) {
     // Some SDK versions throw on safety blocks or quota
-    const msg = err?.message || "Model generateContent failed";
+    const msg = err instanceof Error ? err.message : "Model generateContent failed";
     if (/safety/i.test(msg)) {
       throw new SafetyBlockedError();
     }
     throw err;
     }
   // Safety and media extraction
-  const resp = (result as any).response ?? result;
+  const resp = (result as { response?: unknown }).response ?? result;
   const img = extractInlineImageBase64(resp);
   if (!img) {
-    const safety = resp?.promptFeedback?.safetyRatings || resp?.candidates?.[0]?.safetyRatings;
+    const safety = (resp as { promptFeedback?: { safetyRatings?: unknown }; candidates?: { safetyRatings?: unknown }[] })?.promptFeedback?.safetyRatings || (resp as { candidates?: { safetyRatings?: unknown }[] })?.candidates?.[0]?.safetyRatings;
     if (safety) {
       throw new SafetyBlockedError();
     }

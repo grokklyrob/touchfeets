@@ -23,15 +23,16 @@ export const dynamic = "force-dynamic";
  */
 export async function GET(
   _req: Request,
-  ctx: { params: { id: string } }
+  ctx: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authConfig);
-  if (!session?.user || typeof (session.user as any).id !== "string") {
+  if (!session?.user || typeof session.user.id !== "string") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const userId = (session.user as any).id as string;
+  const userId = session.user.id;
 
-  const jobId = ctx.params?.id;
+  const params = await ctx.params;
+  const jobId = params?.id;
   if (!jobId) {
     return NextResponse.json({ error: "Missing job id" }, { status: 400 });
   }

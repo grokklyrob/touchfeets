@@ -1,0 +1,15 @@
+{
+  "/(marketing)/pricing/page": "/pricing",
+  "/_not-found/page": "/_not-found",
+  "/api/auth/[...nextauth]/route": "/api/auth/[...nextauth]",
+  "/api/download/[id]/route": "/api/download/[id]",
+  "/api/generate/route": "/api/generate",
+  "/api/jobs/[id]/route": "/api/jobs/[id]",
+  "/api/stripe/create-checkout/route": "/api/stripe/create-checkout",
+  "/api/stripe/portal/route": "/api/stripe/portal",
+  "/api/stripe/webhook/route": "/api/stripe/webhook",
+  "/api/upload-url/route": "/api/upload-url",
+  "/api/usage/route": "/api/usage",
+  "/favicon.ico/route": "/favicon.ico",
+  "/page": "/"
+}

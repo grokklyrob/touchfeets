@@ -51,9 +51,9 @@ export default function PricingTable() {
       }
       const { url } = (await res.json()) as { url: string };
       if (url) window.location.href = url;
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      alert(err?.message ?? "Failed to start checkout");
+      alert(err instanceof Error ? err.message : "Failed to start checkout");
     } finally {
       setLoadingPlan(null);
     }

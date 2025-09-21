@@ -47,7 +47,11 @@ type JsonValue = JsonPrimitive | { [key: string]: JsonValue } | JsonValue[];
 async function recordEvent(jobId: string, step: string, detailJson?: JsonValue) {
   try {
     await prisma.generationEvent.create({
-      data: { jobId, step, detailJson },
+      data: {
+        jobId,
+        step,
+        detailJson: detailJson ?? undefined,
+      },
     });
   } catch {
     // best-effort; do not throw

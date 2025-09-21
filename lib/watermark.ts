@@ -57,7 +57,7 @@ export async function applyVisibleWatermark(
   const composited = await img
     .composite([{ input: Buffer.from(svg), top: 0, left: 0 }])
     // Typing of toFormat varies by version; cast for simplicity
-    .toFormat(format as any)
+    .toFormat(format as "png" | "webp" | "jpeg" | "jpg")
     .toBuffer();
 
   return composited;

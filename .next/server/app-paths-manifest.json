@@ -1,5 +1,15 @@
 {
   "/(marketing)/pricing/page": "app/(marketing)/pricing/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/api/download/[id]/route": "app/api/download/[id]/route.js",
+  "/api/generate/route": "app/api/generate/route.js",
+  "/api/jobs/[id]/route": "app/api/jobs/[id]/route.js",
+  "/api/stripe/create-checkout/route": "app/api/stripe/create-checkout/route.js",
+  "/api/stripe/portal/route": "app/api/stripe/portal/route.js",
+  "/api/stripe/webhook/route": "app/api/stripe/webhook/route.js",
+  "/api/upload-url/route": "app/api/upload-url/route.js",
+  "/api/usage/route": "app/api/usage/route.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
   "/page": "app/page.js"
 }

@@ -92,10 +92,10 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ url: session.url }, { status: 200 });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("create-checkout error", err);
     return NextResponse.json(
-      { error: err?.message ?? "Checkout creation failed" },
+      { error: err instanceof Error ? err.message : "Checkout creation failed" },
       { status: 500 }
     );
   }

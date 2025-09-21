@@ -166,7 +166,7 @@ export async function applyEntitlementsForSubscription(opts: {
         stripePriceId,
         resolvedTier: tier,
         month: m,
-      } as unknown as any,
+      },
     },
   });
 

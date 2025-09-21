@@ -20,7 +20,7 @@ export const dynamic = "force-dynamic";
  */
 export async function GET(
   _req: Request,
-  ctx: { params: { id: string } }
+  ctx: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authConfig);
   const user = session?.user as { id?: string } | undefined;
@@ -29,7 +29,8 @@ export async function GET(
   }
   const userId = user.id;
 
-  const jobId = ctx.params?.id;
+  const params = await ctx.params;
+  const jobId = params?.id;
   if (!jobId) {
     return NextResponse.json({ error: "Missing job id" }, { status: 400 });
   }
