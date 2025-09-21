@@ -127,6 +127,7 @@ async function prepareInputBytes(input: Uint8Array, maxEdge: number): Promise<{ 
 
 /**
  * Extract base64 image inlineData from a generative response.
+ * Handles both text and image generation model responses.
  */
 function extractInlineImageBase64(resp: unknown): { b64: string; mime?: string } | null {
   try {
@@ -134,9 +135,20 @@ function extractInlineImageBase64(resp: unknown): { b64: string; mime?: string }
     for (const c of candidates) {
       const parts = (c as { content?: { parts?: unknown[] } })?.content?.parts || [];
       for (const p of parts) {
+        // Try inlineData first (for image generation models)
         if ((p as { inlineData?: { data?: string; mimeType?: string } })?.inlineData?.data) {
           const inlineData = (p as { inlineData: { data: string; mimeType?: string } }).inlineData;
           return { b64: inlineData.data, mime: inlineData.mimeType };
+        }
+
+        // Try text content that might contain base64 data
+        if ((p as { text?: string })?.text) {
+          const text = (p as { text: string }).text;
+          // Look for base64 image data in text response
+          const base64Match = text.match(/data:image\/[^;]+;base64,([^"'\s]+)/);
+          if (base64Match) {
+            return { b64: base64Match[1] };
+          }
         }
       }
     }
@@ -178,22 +190,25 @@ export async function generateStyledJesusFeet(
 
   // Assemble content parts (prompt + inline image). Mask-edit flows could be added later.
   const contents = [
-    {
-      role: "user",
-      parts: [
-        { text: prompt },
-        { inlineData: { data: inputB64, mimeType: inputMime } },
-      ],
-    },
+    prompt,
+    { inlineData: { data: inputB64, mimeType: inputMime } },
   ];
 
   // Call model
   let result: unknown;
   try {
-    result = await model.generateContent({ contents });
+    console.log(`Calling model: ${modelId}`);
+    console.log(`Content structure:`, JSON.stringify(requestContents, null, 2));
+
+    result = await model.generateContent({ contents: requestContents });
+
+    console.log(`Model response received:`, typeof result);
   } catch (err: unknown) {
     // Some SDK versions throw on safety blocks or quota
     const msg = err instanceof Error ? err.message : "Model generateContent failed";
+    console.error(`Model call failed: ${msg}`);
+    console.error(`Full error:`, err);
+
     if (/safety/i.test(msg)) {
       throw new SafetyBlockedError();
     }

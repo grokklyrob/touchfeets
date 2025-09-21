@@ -92,7 +92,7 @@ UPSTASH_REDIS_REST_TOKEN=...
 4. **Test Production**: Verify image generation works with paid tier
 
 ### Available Image Models
-- `gemini-2.5-flash-image-preview` (generateContent, countTokens)
+- `gemini-2.5-flash-image-preview` (generateContent, countTokens) ✅ Currently configured
 - `gemini-2.0-flash-exp-image-generation` (generateContent, countTokens, bidiGenerateContent)
 - `gemini-2.0-flash-preview-image-generation` (generateContent, countTokens, batchGenerateContent)
 - `imagen-3.0-generate-002` (predict)
@@ -123,27 +123,33 @@ UPSTASH_REDIS_REST_TOKEN=...
 
 ## Current Next Task
 
-- **FULLY OPERATIONAL** — All systems working correctly. Image generation functional with paid Google AI Studio tier.
+- **405 METHOD NOT ALLOWED** — Image generation failing due to incorrect API call structure. Need to fix HTTP method/parameters for `gemini-2.5-flash-image-preview` model.
 
-## Deployment Status: ✅ FULLY OPERATIONAL
+## Deployment Status: ⚠️ API CALL ISSUE
 
-### Issue Resolution (2025-09-21)
+### Current Investigation (2025-09-21)
 
-**✅ ALL ISSUES RESOLVED:**
-- **Model Configuration**: Updated to correct model name `gemini-2.5-flash-image-preview`
-- **Billing Enabled**: Google AI Studio quota issue resolved with paid tier
-- **API Working**: Model responds correctly and generates content
-- **Configuration Complete**: All environment variables and documentation updated
+**✅ CONFIRMED WORKING:**
+- **Model Name**: `gemini-2.5-flash-image-preview` is correct and accessible
+- **Billing**: Google AI Studio paid tier enabled and working
+- **API Access**: Model responds to basic requests
+- **Quota**: No quota restrictions
 
-**🔧 FINAL STATUS:**
-- Image generation API fully functional
-- All endpoints responding correctly
-- Production-ready configuration in place
+**❌ CURRENT ISSUE:**
+- **405 Error**: Method Not Allowed when calling image generation
+- **Root Cause**: Incorrect API call structure/parameters for image generation model
+- **HTTP Method**: Wrong method being used (likely GET instead of POST)
 
-**📋 DEPLOYMENT READY:**
-1. **Deploy to Production**: All systems tested and working
-2. **Monitor Usage**: Track Google AI Studio usage in Cloud Console
-3. **Scale as Needed**: Upgrade quotas if usage increases
+**🔧 INVESTIGATION NEEDED:**
+- **API Call Structure**: Need to fix how `generateContent` is called for image models
+- **Content Format**: May need different content structure for image generation
+- **Request Parameters**: May need different parameters than text generation models
+
+**📋 NEXT STEPS:**
+1. **Debug API Call**: Examine exact request being sent to Google API
+2. **Fix Method**: Ensure correct HTTP method (POST) is being used
+3. **Fix Parameters**: Adjust request structure for image generation models
+4. **Test Fix**: Verify image generation works with corrected API call
 
 ### Recent Deployment Fixes (2025-09-21)
 
