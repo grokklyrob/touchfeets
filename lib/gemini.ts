@@ -27,10 +27,10 @@ export class SafetyBlockedError extends Error {
 
 /**
  * Resolve model id, allowing override via env.
- * Default aligns with "Gemini 2.5 Flash Image" family naming.
+ * Updated to use the correct available model name.
  */
 export function getGeminiModelId(): string {
-  return process.env.GEMINI_IMAGE_MODEL?.trim() || "gemini-2.5-flash-image";
+  return process.env.GEMINI_IMAGE_MODEL?.trim() || "gemini-2.5-flash-image-preview";
 }
 
 /**
