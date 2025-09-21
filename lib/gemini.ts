@@ -53,7 +53,7 @@ export function buildPrompt(style: StylePreset, promptVariant?: string): string 
   const base =
     "Analyze the input image and automatically select regions for seamless inpainting. " +
     "Localize human feet and preserve their visibility, toes, placement, perspective, shadows, and proportions. " +
-    "Integrate a tasteful, respectful depiction of Jesus Christ into the scene with natural composition and blending. " +
+    "Integrate a cartoon bear into the scene with natural composition and blending. " +
     "Do not crop or obscure the feet. Match scene lighting, color palette, depth of field, and camera perspective. " +
     "Avoid grotesque or offensive elements. High quality, photoreal or stylized per art direction.";
 
