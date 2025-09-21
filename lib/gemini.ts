@@ -188,19 +188,28 @@ export async function generateStyledJesusFeet(
   const genai = new GoogleGenerativeAI(apiKey);
   const model = genai.getGenerativeModel({ model: modelId });
 
-  // Assemble content parts (prompt + inline image). Mask-edit flows could be added later.
-  const contents = [
-    prompt,
+  // Assemble content parts (prompt + inline image) using explicit structured payload.
+  // This format avoids 405s on image-generation models in some SDK versions.
+  const parts = [
+    { text: prompt },
     { inlineData: { data: inputB64, mimeType: inputMime } },
   ];
+  const payload = {
+    contents: [
+      {
+        role: "user",
+        parts,
+      },
+    ],
+  };
 
   // Call model
   let result: unknown;
   try {
     console.log(`Calling model: ${modelId}`);
-    console.log(`Content structure:`, JSON.stringify(contents, null, 2));
+    console.log(`Payload:`, JSON.stringify(payload, null, 2));
 
-    result = await model.generateContent(contents);
+    result = await model.generateContent(payload);
 
     console.log(`Model response received:`, typeof result);
   } catch (err: unknown) {
@@ -208,12 +217,21 @@ export async function generateStyledJesusFeet(
     const msg = err instanceof Error ? err.message : "Model generateContent failed";
     console.error(`Model call failed: ${msg}`);
     console.error(`Full error:`, err);
+    // Extra diagnostics for HTTP issues like 405
+    const anyErr = err as any;
+    if (anyErr?.status || anyErr?.code) {
+      console.error(`Status/Code:`, anyErr.status, anyErr.code);
+    }
+    if (anyErr?.response) {
+      console.error(`HTTP response status:`, anyErr.response?.status);
+      console.error(`HTTP response data:`, anyErr.response?.data);
+    }
 
     if (/safety/i.test(msg)) {
       throw new SafetyBlockedError();
     }
     throw err;
-    }
+  }
   // Safety and media extraction
   const resp = (result as { response?: unknown }).response ?? result;
   const img = extractInlineImageBase64(resp);

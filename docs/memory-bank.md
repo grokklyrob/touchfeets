@@ -127,6 +127,8 @@ UPSTASH_REDIS_REST_TOKEN=...
 
 ## Deployment Status: ⚠️ API CALL ISSUE
 
+Note (2025-09-21): Vercel build failed on commit 02b2059 due to a stale variable reference in [web/lib/gemini.ts](web/lib/gemini.ts:201). The code has been fixed locally; push and redeploy to resolve the build. See "Recent Deployment Fixes" below for details.
+
 ### Current Investigation (2025-09-21)
 
 **✅ CONFIRMED WORKING:**
@@ -150,16 +152,21 @@ UPSTASH_REDIS_REST_TOKEN=...
 2. **Fix Method**: Ensure correct HTTP method (POST) is being used
 3. **Fix Parameters**: Adjust request structure for image generation models
 4. **Test Fix**: Verify image generation works with corrected API call
+5. **Redeploy**: Push the fix for [web/lib/gemini.ts](web/lib/gemini.ts:1) and redeploy on Vercel to confirm build success
 
 ### Recent Deployment Fixes (2025-09-21)
 
-**✅ RESOLVED - Vercel Build Issues:**
+**⚠️ Update — Vercel build failure detected on commit 02b2059:**
+- Error: TypeScript "Cannot find name 'requestContents'" at [web/lib/gemini.ts](web/lib/gemini.ts:201)
+- Cause: stale console.log variable name; should be `contents` as defined at [web/lib/gemini.ts](web/lib/gemini.ts:192)
+- Status: fixed locally; repo search shows no remaining "requestContents"; redeploy pending
+
+**✅ Resolved — Local build issues:**
 - Fixed all TypeScript `any` type errors across the codebase
 - Updated Next.js route handlers for Next.js 15 compatibility (Promise-based params)
 - Resolved ESLint warnings and unused variable issues
 - Fixed Prisma JSON field type compatibility issues
 - Cleaned up unused eslint-disable directives
-- Build now passes successfully with zero errors or warnings
 
 **Files Updated:**
 - `app/api/jobs/[id]/route.ts` - Fixed NextAuth session typing and Promise-based params
@@ -179,7 +186,7 @@ UPSTASH_REDIS_REST_TOKEN=...
 - `lib/log.ts` - Cleaned up unused eslint-disable directives
 - `lib/prisma.ts` - Cleaned up unused eslint-disable directive
 
-**Build Status:** ✅ Clean build with no errors or warnings
+**Build Status:** ⚠️ Vercel build failed on 2025-09-21 due to stale variable reference; push fix and redeploy
 
 **Completed Core Features:**
 - ✅ Upload/Generate Widget (Task 9) - Fully functional with drag-drop, style selection, polling, and download
